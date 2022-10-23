@@ -3,11 +3,9 @@ title: "PM566_Midterm"
 author: "Yuhong Hu"
 date: "`r Sys.Date()`"
 output: 
-html_document:
+  html_document:
     toc_float: true
     toc: true
-github_document:
-    always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -107,7 +105,7 @@ During the follow-up period, black carbon (BC) was measured at a central monitor
 setwd("~/Desktop/PhD course/pm 566/pm566_midterm")
 nas_hdl <- readRDS("nas_hdl.rds")
 
-# look at the dimension of the dataset and check the missing values/implausible values
+# Look at the dimension of the dataset and check the missing values/implausible values
 str(nas_hdl)
 length(unique(nas_hdl$ID))
 skim(nas_hdl)

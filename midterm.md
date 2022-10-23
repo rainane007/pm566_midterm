@@ -1,7 +1,7 @@
 PM566_Midterm
 ================
 Yuhong Hu
-2022-10-21
+2022-10-23
 
 # Introduction
 
@@ -118,7 +118,7 @@ same day of health visits and up to 2 days before the visit.
 setwd("~/Desktop/PhD course/pm 566/pm566_midterm")
 nas_hdl <- readRDS("nas_hdl.rds")
 
-# look at the dimension of the dataset and check the missing values/implausible values
+# Look at the dimension of the dataset and check the missing values/implausible values
 str(nas_hdl)
 length(unique(nas_hdl$ID))
 skim(nas_hdl)
@@ -248,8 +248,10 @@ rm(nas_long2)
 
 -   We did not observe a temporal trend or seasonal pattern of
     population HDL level.
+
 -   In general, the ambient black carbon level has decrease during
     follow-up, from 1995 to 2011, as expected.
+
 -   Regular seasonal flutuation was observed for ambient temperature
     during follow-up, as expected.
 
@@ -849,6 +851,7 @@ to identify risk factors of HDL among NAS population.
 
 -   For categorical variables, the different shapes of violin were
     observed for different levels of `STATIN`, `DIABETE`, `RACE`.
+
 -   For continuous variables, `AGE` was slightly significantly
     associated with HDL, and `BMI` was moderately significantly
     associated with HDL.
@@ -1012,83 +1015,9 @@ nas %>%
 
 ## Univariate relationship between daily (lag) ambient black carbon, temperature and HDL
 
--   For black carbon, same day black carbon (lag0) , previous day black
-    carbon (lag1), and previous two days black carbon (lag2) seemed to
-    inversely associated with HDL level. Effect modification by diabetes
-    were most obvious for lag2 (effect modification could be roughly
-    identified by comparing slopes among diabtes to slopes among
-    non-diabtes).
-
--   For temperature, lag0, lag1, and lag2 was not associated with HDL
-    for low and medium temperature, whereas there seemed to an inverse
-    association for high temperature. Effect modification by diabetes
-    were most obvious for high temperature.
-
-``` r
-# Relationship between black carbon and HDL for each lag
-nas_long %>% 
-  ggplot()+
-  geom_point(aes(x=BC,y=log(HDL),color=lag),size=0.2,alpha=0.6)+
-  geom_smooth(aes(x=BC,y=log(HDL),color=lag),size = 0.5)+
-  facet_wrap(~lag)+
-  labs(title = "Relationship between daily black carbon and HDL for each lag ", x  = "Black carbon (ug/m3)", y = "HDL, high-density lipoproteins (mg/dL)",color='lag')+
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold", size = 12))
-```
-
-![](midterm_files/figure-gfm/relationship-1.png)<!-- -->
-
-``` r
-# Relationship between black carbon and HDL for each lag by diabetes
-# nas_long %>%
-#   ggplot()+
-#   geom_point(aes(x=BC,y=log(HDL),color=DIABETE),size=0.2,alpha=0.6)+
-#   geom_smooth(aes(x=BC,y=log(HDL),color=DIABETE),size = 0.5)+
-#   facet_wrap(~lag)+
-#   labs(title = "Relationship between daily black carbon and HDL for each lag by diabetes ", x  = "Black carbon (ug/m3)", y = "HDL, high-density lipoproteins (mg/dL)")+
-#   theme_bw() +
-#   theme(
-#     plot.title = element_text(face = "bold", size = 12))
-
-# Relationship between temperature and HDL for each lag
-nas_long %>% 
-  ggplot()+
-  geom_point(aes(x=Temp,y=log(HDL),color=lag),size=0.2,alpha=0.6)+
-  geom_smooth(aes(x=Temp,y=log(HDL),color=lag),size = 0.5)+
-  facet_wrap(~lag)+
-  labs(title = "Relationship between daily temperature and HDL for each lag ", x  = "Temperature (°C)", y = "HDL, high-density lipoproteins (mg/dL)")+
-  theme_bw() +
-  theme(
-    plot.title = element_text(face = "bold", size = 12))
-```
-
-![](midterm_files/figure-gfm/relationship-2.png)<!-- -->
-
-``` r
-# Relationship between temperature and HDL for each lag by diabetes
-# nas_long %>%
-#   ggplot()+
-#   geom_point(aes(x=Temp,y=log(HDL),color=DIABETE),size=0.2,alpha=0.6)+
-#   geom_smooth(aes(x=Temp,y=log(HDL),color=DIABETE),size = 0.5)+
-#   facet_wrap(~lag)+
-#   labs(title = "Relationship between daily temperature and HDL for each lag by diabetes ", x  = "Temperature (°C)", y = "HDL, high-density lipoproteins (mg/dL)")+
-#   theme_bw() +
-#   theme(
-#     plot.title = element_text(face = "bold", size = 12))
-```
-
-## Effect and lag effect of daily ambient black carbon, temperature on HDL
-
-For further exploration of adjusted association of interest, we
-performed linear mixed effect model with the simplest distributed lag
-structure (simultaneous adjustment), to account for correlation between
-repeated measure and lag effects. For parsimony, we simply adjusted for
-covariates that we identified as major risk factors in the NAS
-population in the previous section.
-
-Before modeling, we checked the distribution of HDL, and found the
-normality was achieved by log transformation of HDL.
+Before plotting, we checked the distribution of HDL, and found the
+normality was achieved by log transformation of HDL.Therefore, for the
+following analyses, we used log(HDL) as outcome measure.
 
 ``` r
 nas %>% 
@@ -1115,6 +1044,53 @@ nas %>%
 ```
 
 ![](midterm_files/figure-gfm/distribution-2.png)<!-- -->
+
+-   For black carbon, same day black carbon (lag0) , previous day black
+    carbon (lag1), and previous two days black carbon (lag2) seemed to
+    inversely associated with HDL level.
+
+-   For temperature, lag0, lag1, and lag2 positively associated with HDL
+    for relatively low temperature, whereas negatively associated with
+    HDL for relatively high temperature.
+
+``` r
+# Relationship between black carbon and HDL for each lag
+nas_long %>% 
+  ggplot()+
+  # geom_point(aes(x=BC,y=log(HDL),color=lag),size=0.2,alpha=0.6)+
+  geom_smooth(aes(x=BC,y=log(HDL),color=lag),size = 0.5)+
+  facet_wrap(~lag)+
+  labs(title = "Relationship between daily black carbon and HDL for each lag ", x  = "Black carbon (ug/m3)", y = "HDL, high-density lipoproteins (mg/dL)",color='lag')+
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold", size = 12))
+```
+
+![](midterm_files/figure-gfm/relationship-1.png)<!-- -->
+
+``` r
+# Relationship between temperature and HDL for each lag
+nas_long %>% 
+  ggplot()+
+  # geom_point(aes(x=Temp,y=log(HDL),color=lag),size=0.2,alpha=0.6)+
+  geom_smooth(aes(x=Temp,y=log(HDL),color=lag),size = 0.5)+
+  facet_wrap(~lag)+
+  labs(title = "Relationship between daily temperature and HDL for each lag ", x  = "Temperature (°C)", y = "HDL, high-density lipoproteins (mg/dL)")+
+  theme_bw() +
+  theme(
+    plot.title = element_text(face = "bold", size = 12))
+```
+
+![](midterm_files/figure-gfm/relationship-2.png)<!-- -->
+
+## Effect and lag effect of daily ambient black carbon, temperature on HDL
+
+For further exploration of adjusted association of interest, we
+performed linear mixed effect model with the simplest distributed lag
+structure (simultaneous adjustment), to account for correlation between
+repeated measure and lag effects. For parsimony, we simply adjusted for
+covariates that we identified as major risk factors in the NAS
+population in the previous section.
 
 ### Effect and lag effect of daily ambient black carbon and mofication by diabetes
 
@@ -1303,7 +1279,7 @@ plot_model(mod1.1, type = "pred", terms = c("BC24H", "DIABETE")) +
 black carbon and HDL](midterm_files/figure-gfm/diabetesbc-1.png)
 
 Neither of the lag ambient temperature were significant predictors of
-the outcome.
+the outcome. Linear effect might mask the curvature relationship.
 
 ``` r
 mod2 <- lme(log(HDL)~TEMPC24H+ TMPCD1 + TMPCD2 + DIABETE + STATIN + RACE+ AGE + BMI,random = ~ 1|ID,data=nas)
@@ -1485,13 +1461,15 @@ black carbon and HDL](midterm_files/figure-gfm/diabetestm-1.png)
 
 # Conclusion
 
-For temperature, no effect of same-day or lagged exposure on HDL levels
-were observed. In contrast, we found inverse association between
-same-day and lagged exposure of ambient black carbon and HDL levels,
-this was further supported by the result of linear mixed effect model
-where we did detect a significant effect of same-day black carbon and
-its two lags on HDL. Furthermore, diabetes seemed to modify the
-association between ambient black carbon and HDL levels, and the
-magnitude of the negative association was larger in diabetes group,
-despite the non-significant interaction term was detected using linear
-mixed effect model.
+For temperature, same-day and lagged exposure was positively associated
+with HDL for relatively low temperature, whereas negatively associated
+with HDL for relatively high temperature, though no significant linear
+effect of same-day or lagged exposure on HDL levels were observed. In
+contrast, we found inverse association between same-day and lagged
+exposure of ambient black carbon and HDL levels, this was further
+supported by the result of linear mixed effect model where we did detect
+a significant effect of same-day black carbon and its two lags on HDL.
+Furthermore, diabetes seemed to modify the association between ambient
+black carbon and HDL levels, and the magnitude of the negative
+association was larger in diabetes group, despite the non-significant
+interaction term was detected using linear mixed effect model.
